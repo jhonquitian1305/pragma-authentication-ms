@@ -11,11 +11,10 @@ import reactor.core.publisher.Mono;
 public class UserUseCase implements IUserUseCase {
 
     private final UserRepository userRepository;
-    private final UserValidation userValidation = new UserValidation();
 
     @Override
     public Mono<User> saveOne(User user){
-        this.userValidation.validate(user);
+        UserValidation.validate(user);
         return this.userRepository.isUniqueEmail(user.getEmail())
                 .flatMap(found -> {
                     if(Boolean.TRUE.equals(found)) {
