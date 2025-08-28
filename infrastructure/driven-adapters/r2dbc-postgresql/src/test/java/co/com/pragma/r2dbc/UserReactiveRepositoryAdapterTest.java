@@ -1,78 +1,78 @@
 package co.com.pragma.r2dbc;
 
+import co.com.pragma.model.user.User;
+import co.com.pragma.r2dbc.entity.UserEntity;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.reactivecommons.utils.ObjectMapper;
-import org.springframework.data.domain.Example;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static org.mockito.ArgumentMatchers.any;
+import java.time.LocalDate;
+
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserReactiveRepositoryAdapterTest {
-    // TODO: change four you own tests
 
     @InjectMocks
-    UserReactiveRepositoryAdapter repositoryAdapter;
+    UserReactiveRepositoryAdapter userReactiveRepositoryAdapter;
 
     @Mock
-    UserReactiveRepository repository;
+    UserReactiveRepository userReactiveRepository;
 
     @Mock
     ObjectMapper mapper;
 
-    @Test
-    void mustFindValueById() {
+    private User user;
+    private UserEntity userEntity;
 
-        when(repository.findById("1")).thenReturn(Mono.just("test"));
-        when(mapper.map("test", Object.class)).thenReturn("test");
+   @BeforeEach()
+    void setup(){
+       MockitoAnnotations.openMocks(this);
+       user = User.builder()
+               .id(1L)
+               .name("John")
+               .lastname("Doe")
+               .birthDate(LocalDate.parse("2025-12-25"))
+               .address("en casa")
+               .phone("3254887894")
+               .email("correo@mail.com")
+               .baseSalary(1200.0)
+               .isActive(true)
+               .build();
 
-        Mono<Object> result = repositoryAdapter.findById("1");
+       userEntity = UserEntity.builder()
+               .id(1L)
+               .name("John")
+               .lastname("Doe")
+               .birthDate(LocalDate.parse("2025-12-25"))
+               .address("en casa")
+               .phone("3254887894")
+               .email("correo@mail.com")
+               .baseSalary(1200.0)
+               .isActive(true)
+               .build();
+   }
 
-        StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals("test"))
+   @Test
+    void shouldSaveOneUser(){
+       when(this.mapper.map(user, UserEntity.class)).thenReturn(userEntity);
+       when(this.userReactiveRepository.save(userEntity)).thenReturn(Mono.just(userEntity));
+       when(this.mapper.map(userEntity, User.class)).thenReturn(user);
+
+       StepVerifier.create(userReactiveRepositoryAdapter.saveOne(user))
+                .expectNext(user)
                 .verifyComplete();
-    }
 
-    @Test
-    void mustFindAllValues() {
-        when(repository.findAll()).thenReturn(Flux.just("test"));
-        when(mapper.map("test", Object.class)).thenReturn("test");
-
-        Flux<Object> result = repositoryAdapter.findAll();
-
-        StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals("test"))
-                .verifyComplete();
-    }
-
-    @Test
-    void mustFindByExample() {
-        when(repository.findAll(any(Example.class))).thenReturn(Flux.just("test"));
-        when(mapper.map("test", Object.class)).thenReturn("test");
-
-        Flux<Object> result = repositoryAdapter.findByExample("test");
-
-        StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals("test"))
-                .verifyComplete();
-    }
-
-    @Test
-    void mustSaveValue() {
-        when(repository.save("test")).thenReturn(Mono.just("test"));
-        when(mapper.map("test", Object.class)).thenReturn("test");
-
-        Mono<Object> result = repositoryAdapter.save("test");
-
-        StepVerifier.create(result)
-                .expectNextMatches(value -> value.equals("test"))
-                .verifyComplete();
-    }
+        verify(mapper).map(user, UserEntity.class);
+        verify(this.userReactiveRepository).save(userEntity);
+        verify(mapper).map(userEntity, User.class);
+   }
 }
