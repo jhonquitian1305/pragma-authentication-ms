@@ -1,7 +1,7 @@
 package co.com.pragma.r2dbc.entity;
 
-import jakarta.persistence.Id;
 import lombok.*;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDate;
@@ -20,6 +20,7 @@ public class UserEntity {
 
     private String name;
     private String lastname;
+    private String dni;
     private LocalDate birthDate;
     private String address;
     private String phone;

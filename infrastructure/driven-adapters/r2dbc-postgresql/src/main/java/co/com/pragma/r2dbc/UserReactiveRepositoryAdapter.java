@@ -32,4 +32,10 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
         log.info("searching if email is unique");
         return this.repository.existsByEmail(email);
     }
+
+    @Override
+    public Mono<User> getByDni(String dni) {
+        return this.repository.findByDni(dni)
+                .map(this::toEntity);
+    }
 }

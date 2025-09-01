@@ -13,12 +13,19 @@ public class UserValidation {
 
     public static void validate(User user){
         List<String> errors = new ArrayList<>();
+        validateDni(user.getDni(), errors);
         validateName(user.getName(), errors);
         validateLastName(user.getLastname(), errors);
         validateEmail(user.getEmail(), errors);
         validateBaseSalary(user.getBaseSalary(), errors);
         if(!errors.isEmpty()){
             throw new BusinessException("Error de ingreso en los datos ", errors);
+        }
+    }
+
+    private static void validateDni(String dni, List<String> errors) {
+        if(isNullOrEmpty(dni)){
+            errors.add("El dni no puede ser nulo o vació");
         }
     }
 

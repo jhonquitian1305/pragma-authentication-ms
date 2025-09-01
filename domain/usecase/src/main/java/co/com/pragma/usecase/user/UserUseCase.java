@@ -24,4 +24,10 @@ public class UserUseCase implements IUserUseCase {
                     return this.userRepository.saveOne(user);
                 });
     }
+
+    @Override
+    public Mono<User> getByDni(String dni) {
+        return this.userRepository.getByDni(dni)
+                .switchIfEmpty(Mono.error(new EmailExistsException("User with dni %s not found".formatted(dni))));
+    }
 }

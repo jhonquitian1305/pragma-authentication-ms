@@ -30,4 +30,12 @@ public class Handler {
                 .flatMap(responseUserDTO ->
                         ServerResponse.created(URI.create("/api/v1/users")).bodyValue(responseUserDTO));
     }
+
+    public Mono<ServerResponse> getByDni(ServerRequest serverRequest){
+        String dni = serverRequest.pathVariable("dni");
+
+        return this.userUseCase.getByDni(dni)
+                .map(this.userDTOMapper::toResponse)
+                .flatMap(responseUserDTO -> ServerResponse.ok().bodyValue(responseUserDTO));
+    }
 }
