@@ -1,14 +1,33 @@
 ##Spring Configuration
 server:
-  port: 8080
+  port: ${PORT_APP}
 spring:
   application:
     name: authentication
   devtools:
     add-properties: false
-  h2:
-    console:
-      enabled: true
-      path: /h2
+
+  sql:
+    init:
+      mode: ${MODE_SQL}
+      schema-locations: classpath:db/schema.sql
   profiles:
     include:
+
+  r2dbc:
+    pool:
+      host: ${HOST_DB}
+      port: ${PORT_DB}
+      database: ${NAME_DB}
+      username: ${USER_DB}
+      password: ${PASSWORD_DB}
+      initial-size: 5
+      max-size: 20
+      max-idle-time: 30m
+
+logging:
+  level:
+    io.r2dbc.pool: DEBUG
+
+cors:
+  allowed-origins: ${CORS}
