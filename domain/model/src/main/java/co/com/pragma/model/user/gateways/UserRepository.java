@@ -8,4 +8,6 @@ public interface UserRepository {
     Mono<Boolean> isUniqueEmail(String email);
 
     Mono<User> getByDni(String dni);
+
+    Mono<Boolean> existsByDni(String dni);
 }

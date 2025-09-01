@@ -1,7 +1,9 @@
 package co.com.pragma.api.exception;
 
 import co.com.pragma.model.user.exception.BusinessException;
+import co.com.pragma.usecase.user.exception.DniExistsException;
 import co.com.pragma.usecase.user.exception.EmailExistsException;
+import co.com.pragma.usecase.user.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.HandlerFilterFunction;
@@ -36,6 +38,28 @@ public class GlobalExceptionFilter implements HandlerFilterFunction<ServerRespon
                             ErrorResponse.builder()
                                     .tittle(ex.getTitle())
                                     .status(ex.getStatus())
+                                    .message(ex.getMessage())
+                                    .build()
+                    );
+                })
+                .onErrorResume(DniExistsException.class, ex -> {
+                    log.error("DniExistsException: {}", ex.getMessage(), ex);
+
+                    return ServerResponse.status(400).bodyValue(
+                            ErrorResponse.builder()
+                                    .tittle("Dni exists error")
+                                    .status(400)
+                                    .message(ex.getMessage())
+                                    .build()
+                    );
+                })
+                .onErrorResume(NotFoundException.class, ex -> {
+                    log.error("NotFoundException: {}", ex.getMessage(), ex);
+
+                    return ServerResponse.status(404).bodyValue(
+                            ErrorResponse.builder()
+                                    .tittle("User not found error")
+                                    .status(404)
                                     .message(ex.getMessage())
                                     .build()
                     );

@@ -38,4 +38,9 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
         return this.repository.findByDni(dni)
                 .map(this::toEntity);
     }
+
+    @Override
+    public Mono<Boolean> existsByDni(String dni) {
+        return this.repository.existsByDni(dni);
+    }
 }
