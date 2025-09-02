@@ -4,6 +4,8 @@ import co.com.pragma.api.dto.CreateUserDTO;
 import co.com.pragma.api.dto.ResponseUserDTO;
 import co.com.pragma.api.exception.GlobalExceptionFilter;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
@@ -27,7 +30,7 @@ public class RouterRest {
                 operationId = "users", summary = "Save a user", tags = { "Users" },
                 requestBody = @RequestBody(
                         required = true,
-                        description = "dasfa",
+                        description = "Create a user",
                         content = @Content(
                                 schema = @Schema(implementation = CreateUserDTO.class),
                                 examples = {
@@ -61,6 +64,20 @@ public class RouterRest {
                 .filter(filter);
     }
 
+    @RouterOperation(
+            method = RequestMethod.GET,
+            operation = @Operation(
+                    summary = "Get user by dni", operationId = "users", tags = { "Users" },
+                    parameters = {
+                            @Parameter(
+                                    name = "dni",
+                                    in = ParameterIn.PATH,
+                                    description = "dni user",
+                                    required = true
+                            )
+                    }
+            )
+    )
     @Bean
     public RouterFunction<ServerResponse> routerGetFunction(Handler handler, GlobalExceptionFilter filter) {
         return route(GET("/api/v1/users/{dni}"), handler::getByDni)
