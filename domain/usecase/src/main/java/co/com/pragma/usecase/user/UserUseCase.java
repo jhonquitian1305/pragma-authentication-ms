@@ -1,6 +1,8 @@
 package co.com.pragma.usecase.user;
 
 import co.com.pragma.model.user.User;
+import co.com.pragma.model.user.authentication.Login;
+import co.com.pragma.model.user.authentication.Token;
 import co.com.pragma.model.user.gateways.UserRepository;
 import co.com.pragma.model.user.validation.UserValidation;
 import co.com.pragma.usecase.user.exception.DniExistsException;
@@ -30,5 +32,11 @@ public class UserUseCase implements IUserUseCase {
     public Mono<User> getByDni(String dni) {
         return this.userRepository.getByDni(dni)
                 .switchIfEmpty(Mono.error(new NotFoundException("User with dni %s not found".formatted(dni))));
+    }
+
+    @Override
+    public Mono<Token> login(Login login) {
+        return this.userRepository.login(login)
+                .switchIfEmpty(Mono.error(new NotFoundException("bad credentials")));
     }
 }

@@ -31,3 +31,7 @@ logging:
 
 cors:
   allowed-origins: ${CORS}
+
+jwt:
+  secret: ${SIGN_TOKEN}
+  expiration: ${EXPIRATION_TOKEN}

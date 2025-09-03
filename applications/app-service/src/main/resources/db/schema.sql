@@ -1,12 +1,20 @@
+CREATE TABLE IF NOT EXISTS roles (
+    id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
 CREATE TABLE IF NOT EXISTS users (
    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
    name VARCHAR(100) NOT NULL,
    lastname VARCHAR(100),
+   password VARCHAR(100),
    birth_date DATE,
    address VARCHAR(255),
    phone VARCHAR(20),
    dni VARCHAR(150) UNIQUE NOT NULL,
    email VARCHAR(150) UNIQUE NOT NULL,
    base_salary NUMERIC(10,2),
-   is_active BOOLEAN DEFAULT TRUE
+   is_active BOOLEAN DEFAULT TRUE,
+   id_role INT NOT NULL,
+   CONSTRAINT fk_user_role FOREIGN KEY (id_role) REFERENCES roles(id)
 );

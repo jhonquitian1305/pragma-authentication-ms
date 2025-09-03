@@ -11,5 +11,6 @@ public record ResponseUserDTO(
         String address,
         String phone,
         String email,
-        double baseSalary) {
+        double baseSalary,
+        Long idRole) {
 }

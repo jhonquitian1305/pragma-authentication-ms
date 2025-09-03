@@ -14,10 +14,12 @@ public class User {
     private String name;
     private String lastname;
     private String dni;
+    private String password;
     private LocalDate birthDate;
     private String address;
     private String phone;
     private String email;
     private Double baseSalary;
     private Boolean isActive;
+    private Long idRole;
 }

@@ -59,9 +59,9 @@ public class RouterRest {
             )
     )
     @Bean
-    public RouterFunction<ServerResponse> routerFunction(Handler handler, GlobalExceptionFilter filter) {
+    public RouterFunction<ServerResponse> routerFunction(Handler handler, GlobalExceptionFilter globalExceptionFilter) {
         return route(POST("/api/v1/users"), handler::saveOne)
-                .filter(filter);
+                .filter(globalExceptionFilter);
     }
 
     @RouterOperation(
@@ -81,6 +81,13 @@ public class RouterRest {
     @Bean
     public RouterFunction<ServerResponse> routerGetFunction(Handler handler, GlobalExceptionFilter filter) {
         return route(GET("/api/v1/users/{dni}"), handler::getByDni)
+                .filter(filter);
+    }
+
+    @Bean
+    public RouterFunction<ServerResponse> loginRoute(Handler authHandler, GlobalExceptionFilter filter) {
+        return route(
+                POST("/api/v1/login"), authHandler::logIn)
                 .filter(filter);
     }
 }

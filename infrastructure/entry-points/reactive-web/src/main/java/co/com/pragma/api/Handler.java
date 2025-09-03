@@ -1,10 +1,14 @@
 package co.com.pragma.api;
 
 import co.com.pragma.api.dto.CreateUserDTO;
+import co.com.pragma.api.dto.LoginDTO;
 import co.com.pragma.api.mapper.UserDTOMapper;
+import co.com.pragma.model.user.authentication.Login;
+import co.com.pragma.model.user.authentication.Token;
 import co.com.pragma.usecase.user.IUserUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
@@ -37,5 +41,12 @@ public class Handler {
         return this.userUseCase.getByDni(dni)
                 .map(this.userDTOMapper::toResponse)
                 .flatMap(responseUserDTO -> ServerResponse.ok().bodyValue(responseUserDTO));
+    }
+
+    public Mono<ServerResponse> logIn(ServerRequest request) {
+
+        return request.bodyToMono(Login.class)
+                .flatMap(userUseCase::login)
+                .flatMap(token -> ServerResponse.ok().bodyValue(token));
     }
 }
