@@ -1,20 +1,18 @@
 package co.com.pragma.api;
 
 import co.com.pragma.api.dto.CreateUserDTO;
-import co.com.pragma.api.dto.LoginDTO;
 import co.com.pragma.api.mapper.UserDTOMapper;
 import co.com.pragma.model.user.authentication.Login;
-import co.com.pragma.model.user.authentication.Token;
 import co.com.pragma.usecase.user.IUserUseCase;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import java.net.URI;
+import java.security.Principal;
 
 @Component
 @RequiredArgsConstructor
@@ -38,7 +36,9 @@ public class Handler {
     public Mono<ServerResponse> getByDni(ServerRequest serverRequest){
         String dni = serverRequest.pathVariable("dni");
 
-        return this.userUseCase.getByDni(dni)
+        return serverRequest.principal()
+                .map(Principal::getName)
+                .flatMap(email -> this.userUseCase.getByDni(dni, email))
                 .map(this.userDTOMapper::toResponse)
                 .flatMap(responseUserDTO -> ServerResponse.ok().bodyValue(responseUserDTO));
     }

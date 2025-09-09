@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 public interface IUserUseCase {
     Mono<User> saveOne(User user);
 
-    Mono<User> getByDni(String dni);
+    Mono<User> getByDni(String dni, String email);
 
     Mono<Token> login(Login login);
 }

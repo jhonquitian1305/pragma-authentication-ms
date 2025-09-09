@@ -5,6 +5,7 @@ import co.com.pragma.security.repository.SecurityContextRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
@@ -19,6 +20,7 @@ import org.springframework.security.web.server.authorization.ServerAccessDeniedH
 import reactor.core.publisher.Mono;
 
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Logger;
 
 @Configuration
 @EnableWebFluxSecurity
@@ -26,6 +28,8 @@ import java.nio.charset.StandardCharsets;
 public class SecurityConfig {
 
     private final SecurityContextRepository securityContextRepository;
+
+    private static final Logger logger =  Logger.getLogger(SecurityConfig.class.getName());
 
     public SecurityConfig(SecurityContextRepository securityContextRepository) {
         this.securityContextRepository = securityContextRepository;
@@ -45,7 +49,8 @@ public class SecurityConfig {
                         .pathMatchers("/api/v1/login/**").permitAll()
                         .pathMatchers("/swagger-ui/**").permitAll()
                         .pathMatchers("/v3/**").permitAll()
-                        .pathMatchers("/api/v1/users/**").hasAnyAuthority("ADMIN", "ASESOR")
+                        .pathMatchers(HttpMethod.POST, "/api/v1/users/**").hasAnyAuthority("ADMIN", "ASESOR")
+                        .pathMatchers(HttpMethod.GET, "/api/v1/users/{dni}").hasAnyAuthority("CLIENTE")
                         .anyExchange().authenticated())
                 .exceptionHandling(exceptionHandlingSpec -> exceptionHandlingSpec
                         .accessDeniedHandler(accessDeniedHandler())
@@ -65,6 +70,7 @@ public class SecurityConfig {
             exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
             exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
+
             String body = """
                 {
                   "error": "Access Denied",
@@ -72,6 +78,7 @@ public class SecurityConfig {
                   "status": 403
                 }
                 """;
+            logger.info(body);
 
             DataBuffer buffer = exchange.getResponse().bufferFactory()
                     .wrap(body.getBytes(StandardCharsets.UTF_8));
@@ -93,6 +100,7 @@ public class SecurityConfig {
                   "status": 401
                 }
                 """;
+            logger.info(body);
 
             DataBuffer buffer = exchange.getResponse().bufferFactory()
                     .wrap(body.getBytes(StandardCharsets.UTF_8));
