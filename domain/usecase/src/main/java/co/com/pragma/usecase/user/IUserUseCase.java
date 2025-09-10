@@ -11,4 +11,6 @@ public interface IUserUseCase {
     Mono<User> getByDni(String dni, String email);
 
     Mono<Token> login(Login login);
+
+    Mono<User> getInfoByDni(String dni);
 }

@@ -14,4 +14,6 @@ public interface UserRepository {
     Mono<Boolean> existsByDni(String dni);
 
     Mono<Token> login(Login login);
+
+    Mono<User> getInfoByDni(String dni);
 }

@@ -49,4 +49,11 @@ public class Handler {
                 .flatMap(userUseCase::login)
                 .flatMap(token -> ServerResponse.ok().bodyValue(token));
     }
+
+    public Mono<ServerResponse> userInfoDni(ServerRequest serverRequest){
+        String dni = serverRequest.pathVariable("dni");
+        return this.userUseCase.getInfoByDni(dni)
+                .map(this.userDTOMapper::toResponse)
+                .flatMap(responseUserDTO -> ServerResponse.ok().bodyValue(responseUserDTO));
+    }
 }

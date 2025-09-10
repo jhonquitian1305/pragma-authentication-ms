@@ -40,4 +40,9 @@ public class UserUseCase implements IUserUseCase {
         return this.userRepository.login(login)
                 .switchIfEmpty(Mono.error(new NotFoundException("bad credentials")));
     }
+
+    @Override
+    public Mono<User> getInfoByDni(String dni) {
+        return this.userRepository.getInfoByDni(dni);
+    }
 }

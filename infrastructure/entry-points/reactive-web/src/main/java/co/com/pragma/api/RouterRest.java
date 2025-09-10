@@ -90,4 +90,10 @@ public class RouterRest {
                 POST("/api/v1/login"), authHandler::logIn)
                 .filter(filter);
     }
+
+    @Bean
+    public RouterFunction<ServerResponse> userInfoDni(Handler handler, GlobalExceptionFilter filter){
+        return route( GET("/api/v1/users/info/{dni}"), handler::userInfoDni)
+                .filter(filter);
+    }
 }

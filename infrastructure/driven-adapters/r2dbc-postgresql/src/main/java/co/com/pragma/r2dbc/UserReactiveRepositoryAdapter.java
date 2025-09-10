@@ -63,4 +63,10 @@ public class UserReactiveRepositoryAdapter extends ReactiveAdapterOperations<
                 .filter(userDocument -> passwordEncoder.matches(login.password(), userDocument.getPassword()))
                 .map(userDocument -> new Token(jwtProvider.generateToken(userDocument)));
     }
+
+    @Override
+    public Mono<User> getInfoByDni(String dni) {
+        return this.repository.findByDni(dni)
+                .map(this::toEntity);
+    }
 }
