@@ -1,6 +1,7 @@
 package co.com.pragma.api;
 
 import co.com.pragma.api.dto.CreateUserDTO;
+import co.com.pragma.api.dto.LoginDTO;
 import co.com.pragma.api.dto.ResponseUserDTO;
 import co.com.pragma.api.exception.GlobalExceptionFilter;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springdoc.core.annotations.RouterOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +26,27 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 
 @Configuration
 public class RouterRest {
+
+    @RouterOperation(
+            method = RequestMethod.POST,
+            operation = @Operation(
+                    summary = "Login", operationId = "login", tags = { "Login" },
+                    requestBody = @RequestBody(
+                            required = true,
+                            description = "Login",
+                            content = @Content(
+                                    schema = @Schema(implementation = LoginDTO.class)
+                            )
+                    )
+
+            )
+    )
+    @Bean
+    public RouterFunction<ServerResponse> loginRoute(Handler authHandler, GlobalExceptionFilter filter) {
+        return route(
+                POST("/api/v1/login"), authHandler::logIn)
+                .filter(filter);
+    }
 
     @RouterOperation(
             operation = @Operation(
@@ -40,6 +63,7 @@ public class RouterRest {
                                                         {
                                                             "name": "John",
                                                             "lastname": "Doe",
+                                                            "dni": "123456789",
                                                             "email": "jhon@example.com",
                                                             "birthDate": "2025-05-15",
                                                             "address": "dirección vivienda",
@@ -55,7 +79,8 @@ public class RouterRest {
                 responses = {
                     @ApiResponse(responseCode = "201", description = "User created", content = @Content(schema = @Schema(implementation = ResponseUserDTO.class))),
                     @ApiResponse(responseCode = "400", description = "Invalid data or email exists"),
-                }
+                },
+                security = { @SecurityRequirement(name = "bearerAuth")}
             )
     )
     @Bean
@@ -67,7 +92,7 @@ public class RouterRest {
     @RouterOperation(
             method = RequestMethod.GET,
             operation = @Operation(
-                    summary = "Get user by dni", operationId = "users", tags = { "Users" },
+                    summary = "Get user by dni for create a loan", operationId = "users", tags = { "Users" },
                     parameters = {
                             @Parameter(
                                     name = "dni",
@@ -75,7 +100,8 @@ public class RouterRest {
                                     description = "dni user",
                                     required = true
                             )
-                    }
+                    },
+                    security = { @SecurityRequirement(name = "bearerAuth")}
             )
     )
     @Bean
@@ -84,13 +110,21 @@ public class RouterRest {
                 .filter(filter);
     }
 
-    @Bean
-    public RouterFunction<ServerResponse> loginRoute(Handler authHandler, GlobalExceptionFilter filter) {
-        return route(
-                POST("/api/v1/login"), authHandler::logIn)
-                .filter(filter);
-    }
-
+    @RouterOperation(
+            method = RequestMethod.GET,
+            operation = @Operation(
+                    summary = "Get info user by dni for get all loans", operationId = "users", tags = { "Users" },
+                    parameters = {
+                            @Parameter(
+                                    name = "dni",
+                                    in = ParameterIn.PATH,
+                                    description = "dni user",
+                                    required = true
+                            )
+                    },
+                    security = { @SecurityRequirement(name = "bearerAuth")}
+            )
+    )
     @Bean
     public RouterFunction<ServerResponse> userInfoDni(Handler handler, GlobalExceptionFilter filter){
         return route( GET("/api/v1/users/info/{dni}"), handler::userInfoDni)
