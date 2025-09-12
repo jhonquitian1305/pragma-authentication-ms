@@ -3,7 +3,7 @@ package co.com.pragma.security.provider;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -13,29 +13,26 @@ import java.util.Date;
 import java.util.logging.Logger;
 
 @Component
+@RequiredArgsConstructor
 public class JwtProvider {
 
     private static final Logger logger =  Logger.getLogger(JwtProvider.class.getName());
 
-    @Value("${jwt.secret}")
-    private String secret;
-
-    @Value("${jwt.expiration}")
-    private Integer expiration;
+    private final TokenProperties tokenProperties;
 
     public String generateToken(UserDetails userDetails) {
         return Jwts.builder()
                 .subject(userDetails.getUsername())
                 .claim("roles", userDetails.getAuthorities())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000L * expiration))
-                .signWith(getKey(secret))
+                .expiration(new Date(System.currentTimeMillis() + 1000L * tokenProperties.expiration()))
+                .signWith(getKey(tokenProperties.secret()))
                 .compact();
     }
 
     public Claims getClaims(String token) {
         return Jwts.parser()
-                .verifyWith((SecretKey) getKey(secret))
+                .verifyWith((SecretKey) getKey(tokenProperties.secret()))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
@@ -43,7 +40,7 @@ public class JwtProvider {
 
     public String getSubject(String token) {
         return Jwts.parser()
-                .verifyWith((SecretKey) getKey(secret))
+                .verifyWith((SecretKey) getKey(tokenProperties.secret()))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload()
@@ -53,7 +50,7 @@ public class JwtProvider {
     public boolean validate(String token){
         try {
             Jwts.parser()
-                    .verifyWith((SecretKey) getKey(secret))
+                    .verifyWith((SecretKey) getKey(tokenProperties.secret()))
                     .build()
                     .parseSignedClaims(token)
                     .getPayload()

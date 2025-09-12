@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .pathMatchers("/api/v1/login/**").permitAll()
                         .pathMatchers("/swagger-ui/**").permitAll()
                         .pathMatchers("/v3/**").permitAll()
-                        .pathMatchers("/api/v1/users/info/{dni}").hasAnyAuthority("ASESOR")
+                        .pathMatchers("/api/v1/users/info/{dni}").hasAnyAuthority("ADMIN", "ASESOR")
                         .pathMatchers(HttpMethod.POST, "/api/v1/users/**").hasAnyAuthority("ADMIN", "ASESOR")
                         .pathMatchers(HttpMethod.GET, "/api/v1/users/{dni}").hasAnyAuthority("CLIENTE")
                         .anyExchange().authenticated())
