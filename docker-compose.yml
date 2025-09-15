@@ -1,0 +1,46 @@
+services:
+  authentication-app:
+    depends_on:
+      - db-users
+    container_name: authentication-app
+    image: authentication-app:1.0.0
+    build:
+      context: .
+      dockerfile: deployment/Dockerfile
+    restart: always
+    ports:
+      - "${PORT_APP}:8080"
+    environment:
+      PORT_APP: ${PORT_APP}
+      HOST_DB: ${NAME_DB}
+      PORT_DB: ${PORT_DB}
+      NAME_DB: ${NAME_DB}
+      USER_DB: ${USER_DB}
+      PASSWORD_DB: ${PASSWORD_DB}
+      MODE_SQL: ${MODE_SQL}
+      SIGN_TOKEN: ${SIGN_TOKEN}
+      EXPIRATION_TOKEN: ${EXPIRATION_TOKEN}
+      CORS: ${CORS}
+    networks:
+      - pragma-loan-network
+
+  db-users:
+    container_name: ${NAME_DB}
+    image: postgres:14.3
+    restart: always
+    ports:
+      - "${PORT_DB}:5432"
+    environment:
+      POSTGRES_PASSWORD: ${PASSWORD_DB}
+      POSTGRES_DB: ${NAME_DB}
+    volumes:
+      - data_users:/var/lib/postgresql/data
+    networks:
+      - pragma-loan-network
+
+volumes:
+  data_users:
+
+networks:
+  pragma-loan-network:
+    driver: bridge
